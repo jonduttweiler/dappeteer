@@ -1,5 +1,5 @@
 import * as path from 'path'
-import * as puppeteer from 'Puppeteer'
+import * as puppeteer from 'puppeteer';
 
 const timeout = seconds => new Promise(resolve => setTimeout(resolve, seconds * 1000))
 
@@ -15,10 +15,18 @@ export type MetamaskOptions = {
   extensionUrl?: string
 }
 
+export declare type NetworkOptions = {
+  name: string,
+  url: string,
+  chainId?: string,
+  networkTicker?: string,
+  blockExplorer?: string
+}
+
 export type Dappeteer = {
   lock: () => Promise<void>
   unlock: (password: string) => Promise<void>
-  addNetwork: (url: string) => Promise<void>
+  addNetwork: (network: NetworkOptions) => Promise<void>
   importPK: (pk: string) => Promise<void>
   switchAccount: (accountNumber: number) => Promise<void>
   switchNetwork: (network: string) => Promise<void>
@@ -96,7 +104,7 @@ export async function getMetamask(
       signedIn = true
     },
 
-    addNetwork: async url => {
+    addNetwork: async network => {
       await metamaskPage.bringToFront()
       const networkSwitcher = await metamaskPage.waitFor('.network-indicator')
       await networkSwitcher.click()
@@ -111,11 +119,34 @@ export async function getMetamask(
         }
         return elements.length - 1
       }, 'Custom RPC')
+
       const networkButton = (await metamaskPage.$$('li.dropdown-menu-item'))[networkIndex]
       await networkButton.click()
-      const newRPCInput = await metamaskPage.waitFor('input#new-rpc')
-      await newRPCInput.type(url)
-      const saveButton = await metamaskPage.waitFor('button.settings-tab__rpc-save-button')
+
+      const { name, url, chainId, networkTicker, blockExplorer } = network;
+
+      if (name) {
+        const nameInput = await metamaskPage.waitFor("input#network-name");
+        await nameInput.type(name);
+      }
+      if (url) {
+        const rpcInput = await metamaskPage.waitFor("input#rpc-url");
+        await rpcInput.type(url);
+      }
+      if (chainId) {
+        const chainIdInput = await metamaskPage.waitFor("input#chainId");
+        await chainIdInput.type(chainId);
+      }
+      if (networkTicker) {
+        const networkTickerInput = await metamaskPage.waitFor("input#network-ticker");
+        await networkTickerInput.type(networkTicker);
+      }
+      if (blockExplorer) {
+        const blockExplorerInput = await metamaskPage.waitFor("input#block-explorer");
+        await blockExplorerInput.type(blockExplorer);
+      }
+
+      const saveButton = await metamaskPage.waitFor('.network-form__footer button.btn-secondary')
       await saveButton.click()
       const prevButton = await metamaskPage.waitFor('img.app-header__metafox-logo')
       await prevButton.click()
