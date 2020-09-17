@@ -106,9 +106,9 @@ export async function getMetamask(
 
     addNetwork: async network => {
       await metamaskPage.bringToFront()
-      const networkSwitcher = await metamaskPage.waitFor('.network-indicator')
+      const networkSwitcher = await metamaskPage.waitForSelector('.network-indicator')
       await networkSwitcher.click()
-      await metamaskPage.waitFor('li.dropdown-menu-item')
+      await metamaskPage.waitForSelector('li.dropdown-menu-item')
       const networkIndex = await metamaskPage.evaluate(network => {
         const elements = document.querySelectorAll('li.dropdown-menu-item')
         for (let i = 0; i < elements.length; i++) {
@@ -126,49 +126,49 @@ export async function getMetamask(
       const { name, url, chainId, networkTicker, blockExplorer } = network;
 
       if (name) {
-        const nameInput = await metamaskPage.waitFor("input#network-name");
+        const nameInput = await metamaskPage.waitForSelector("input#network-name");
         await nameInput.type(name);
       }
       if (url) {
-        const rpcInput = await metamaskPage.waitFor("input#rpc-url");
+        const rpcInput = await metamaskPage.waitForSelector("input#rpc-url");
         await rpcInput.type(url);
       }
       if (chainId) {
-        const chainIdInput = await metamaskPage.waitFor("input#chainId");
+        const chainIdInput = await metamaskPage.waitForSelector("input#chainId");
         await chainIdInput.type(chainId);
       }
       if (networkTicker) {
-        const networkTickerInput = await metamaskPage.waitFor("input#network-ticker");
+        const networkTickerInput = await metamaskPage.waitForSelector("input#network-ticker");
         await networkTickerInput.type(networkTicker);
       }
       if (blockExplorer) {
-        const blockExplorerInput = await metamaskPage.waitFor("input#block-explorer");
+        const blockExplorerInput = await metamaskPage.waitForSelector("input#block-explorer");
         await blockExplorerInput.type(blockExplorer);
       }
 
-      const saveButton = await metamaskPage.waitFor('.network-form__footer button.btn-secondary')
+      const saveButton = await metamaskPage.waitForSelector('.network-form__footer button.btn-secondary')
       await saveButton.click()
-      const prevButton = await metamaskPage.waitFor('img.app-header__metafox-logo')
+      const prevButton = await metamaskPage.waitForSelector('img.app-header__metafox-logo')
       await prevButton.click()
       await waitForUnlockedScreen(metamaskPage)
     },
 
     importPK: async pk => {
       await metamaskPage.bringToFront()
-      const accountSwitcher = await metamaskPage.waitFor('.identicon')
+      const accountSwitcher = await metamaskPage.waitForSelector('.identicon')
       await accountSwitcher.click()
-      const addAccount = await metamaskPage.waitFor('.account-menu > div:nth-child(7)')
+      const addAccount = await metamaskPage.waitForSelector('.account-menu > div:nth-child(7)')
       await addAccount.click()
-      const PKInput = await metamaskPage.waitFor('input#private-key-box')
+      const PKInput = await metamaskPage.waitForSelector('input#private-key-box')
       await PKInput.type(pk)
-      const importButton = await metamaskPage.waitFor('button.btn-secondary')
+      const importButton = await metamaskPage.waitForSelector('button.btn-secondary')
       await importButton.click()
       await waitForUnlockedScreen(metamaskPage)
     },
 
     switchAccount: async accountNumber => {
       await metamaskPage.bringToFront()
-      const accountSwitcher = await metamaskPage.waitFor('.identicon')
+      const accountSwitcher = await metamaskPage.waitForSelector('.identicon')
       await accountSwitcher.click()
       const account = await metamaskPage.waitFor(
         `.account-menu__accounts > div:nth-child(${accountNumber})`
